@@ -19,6 +19,42 @@ def multiplyMatrices(matrix_couple):
     return result
 
 
+def cpuinfo():
+    ''' Return the information in /proc/cpuinfo
+    as a dictionary in the following format:
+    cpu_info['proc0']={...}
+    cpu_info['proc1']={...}
+
+    '''
+
+    cpuinfo=OrderedDict()
+    procinfo=OrderedDict()
+
+    nprocs = 0
+    with open('/proc/cpuinfo') as f:
+        for line in f:
+            if not line.strip():
+                # end of one processor
+                cpuinfo['proc%s' % nprocs] = procinfo
+                nprocs=nprocs+1
+                # Reset
+                procinfo=OrderedDict()
+            else:
+                if len(line.split(':')) == 2:
+                    procinfo[line.split(':')[0].strip()] = line.split(':')[1].strip()
+                else:
+                    procinfo[line.split(':')[0].strip()] = ''
+
+    return cpuinfo
+
+def getSpecifications():
+
+    cpuinfo = cpuinfo()
+    for processor in cpuinfo.keys():
+        print(cpuinfo[processor]['model name'])
+
+
+
 if len(sys.argv) != 3:
     print("Format: python computation_node.py <Director_IP> <Director_Port>")
     exit()
@@ -27,6 +63,10 @@ if len(sys.argv) != 3:
 BUFFER_SIZE = 1024
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
+
+hw_specs = getSpecifications()
+
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
