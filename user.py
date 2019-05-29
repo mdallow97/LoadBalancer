@@ -45,9 +45,9 @@ while 1:
 
 
     # NOT ABLE TO SEND DATA BACK YET
-    # data = None
-    # while not data:
-    #     data = s.recv(BUFFER_SIZE)
-    #
-    # result = pickle.loads(data)
-    # helper.printMatrix(result.getResult(), result.getSize())
+    data = None
+    while not data:
+        data = s.recv(BUFFER_SIZE)
+
+    result = pickle.loads(data)
+    helper.printMatrix(result.getResult(), result.getSize())
