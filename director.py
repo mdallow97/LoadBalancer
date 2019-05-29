@@ -54,9 +54,6 @@ def receiveRequest(conn, addr):
     else:
         print("ERROR")
 
-    if addr[0] not in nodes:
-        print("Closing connection to ", addr[0])
-        conn.close()
 
 def distributeLoad():
     while 1:
