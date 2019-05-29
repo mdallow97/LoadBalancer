@@ -44,7 +44,6 @@ def receiveRequest(conn, addr):
         for addr_tuple in users:
             print(addr_tuple[1], " vs ", original_addr)
             if addr_tuple[1] == original_addr:
-                print("gets here")
                 addr_tuple[0].send(pickle.dumps(x))
                 break
         else:
@@ -56,6 +55,7 @@ def receiveRequest(conn, addr):
         print("ERROR")
 
     if addr[0] not in nodes:
+        print("Closing connection to ", addr[0])
         conn.close()
 
 def distributeLoad():
