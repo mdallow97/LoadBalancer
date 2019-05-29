@@ -40,15 +40,15 @@ def receiveRequest(conn, addr):
         helper.printMatrix(x.getResult(), x.getSize())
 
         # CANNOT YET SEND BACK TO USER
-        # original_addr = result.getUser()
-        # for addr_tuple in users:
-        #     print(addr_tuple[1], " vs ", original_addr)
-        #     if addr_tuple[1] == original_addr:
-        #         print("gets here")
-        #         addr_tuple[0].send(data)
-        #         break
-        # else:
-        #     print("Not able to send result back to user")
+        original_addr = result.getUser()
+        for addr_tuple in users:
+            print(addr_tuple[1], " vs ", original_addr)
+            if addr_tuple[1] == original_addr:
+                print("gets here")
+                addr_tuple[0].send(data)
+                break
+        else:
+            print("Not able to send result back to user")
 
     elif type(x) == helper.Specifications:
         updateLog(addr, x)
