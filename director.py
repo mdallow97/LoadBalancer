@@ -40,12 +40,12 @@ def receiveRequest(conn, addr):
         helper.printMatrix(x.getResult(), x.getSize())
 
         # CANNOT YET SEND BACK TO USER
-        original_addr = result.getUser()
+        original_addr = x.getUser()
         for addr_tuple in users:
             print(addr_tuple[1], " vs ", original_addr)
             if addr_tuple[1] == original_addr:
                 print("gets here")
-                addr_tuple[0].send(data)
+                addr_tuple[0].send(pickle.dumps(x))
                 break
         else:
             print("Not able to send result back to user")
@@ -97,7 +97,6 @@ if len(sys.argv) < 2:
 
 for i in range(1, len(sys.argv)):
     nodes.append(sys.argv[i])
-    print(sys.argv[i])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
