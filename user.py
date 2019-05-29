@@ -50,4 +50,6 @@ while 1:
         data = s.recv(BUFFER_SIZE)
 
     result = pickle.loads(data)
+
+    print("\n\tResulting Matrix")
     helper.printMatrix(result.getResult(), result.getSize())

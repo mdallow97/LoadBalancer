@@ -16,7 +16,6 @@ def multiplyMatrices(matrix_couple):
             for k in range(n):
                 result[i][j] += matrix1[i][k] * matrix2[k][j]
 
-    helper.printMatrix(result, n)
     return result
 
 
