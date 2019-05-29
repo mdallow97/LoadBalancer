@@ -36,10 +36,7 @@ def receiveRequest(conn, addr):
         matrix_couple_queue.append(x)
 
     elif type(x) == helper.ResultMatrix:
-        print("\n\tResulting Matrix")
-        helper.printMatrix(x.getResult(), x.getSize())
 
-        # CANNOT YET SEND BACK TO USER
         original_addr = x.getUser()
         for addr_tuple in users:
             print(addr_tuple[1], " vs ", original_addr)
