@@ -6,7 +6,7 @@ import socket, pickle
 import sys
 import helper
 import cpuinfo
-import gpuinfo
+
 
 from helper import Specifications
 
@@ -44,9 +44,14 @@ def getSpecifications():
 
     clock_rate = float(clock_rate_str)
 
+    hardware = helper.Specifications(num_cpus, cpu_cores, clock_rate)
+
+
     # Get GPU information
-    users = gpuinfo.get_users()
-    print(users)
+    
+
+    # Return Specifications
+    return hardware 
 
 
 if len(sys.argv) != 3:

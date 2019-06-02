@@ -39,19 +39,17 @@ class ResultMatrix:
 
 class Specifications:
     # can hold different hw specifications
-    def __init__(self, num_CPUs, num_GPUs):
+    def __init__(self, num_CPUs, num_CPU_cores, CPU_freq):
         # [0]: number processors, [1]: number cores, [2]: frequency
         self.CPU = []
         self.GPU = []
 
         self.CPU.append(num_CPUs)
+        self.CPU.append(num_CPU_cores)
+        self.CPU.append(CPU_freq)
+
+    def setGPU(self, num_GPUs, frequency, num_cores):
         self.GPU.append(num_GPUs)
-
-    def setCPUspecifics(self, frequency, num_cores):
-        self.CPU.append(num_cores)
-        self.CPU.append(frequency)
-
-    def setGPUspecifics(self, frequency, num_cores):
         self.GPU.append(num_cores)
         self.GPU.append(frequency)
 
