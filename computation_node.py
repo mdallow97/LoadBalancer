@@ -64,7 +64,9 @@ def getSpecifications():
 '''
 
 def getSpecifications():
-    print(cpuinfo.cpu.info)
+    cpu_model = cpuinfo.cpu.info[0]['model name']
+    cpu_cores = cpuinfo.cpu.info[0]['cpu cores']
+    print("# processors?: ", len(cpuinfo.cpu.info))
 
 
 if len(sys.argv) != 3:
