@@ -1,10 +1,11 @@
 # Computation Node
-import socket, pickle
-import sys
-import helper
 from __future__ import print_function
 from collections import OrderedDict
 import pprint
+import socket, pickle
+import sys
+import helper
+import cpuinfo
 
 from helper import Specifications
 
@@ -21,14 +22,14 @@ def multiplyMatrices(matrix_couple):
 
     return result
 
-
-def cpuinfo():
-    ''' Return the information in /proc/cpuinfo
+'''
+def getCPUinfo():
+    \''' Return the information in /proc/cpuinfo
     as a dictionary in the following format:
     cpu_info['proc0']={...}
     cpu_info['proc1']={...}
 
-    '''
+    \'''
 
     cpuinfo=OrderedDict()
     procinfo=OrderedDict()
@@ -50,12 +51,20 @@ def cpuinfo():
 
     return cpuinfo
 
+
 def getSpecifications():
 
-    cpuinfo = cpuinfo()
+    cpuinfo = getCPUinfo()
+    numCPUs = 0
     for processor in cpuinfo.keys():
+        numCPUs += 1
         print(cpuinfo[processor]['model name'])
 
+    print("Total number of processor: ", numCPUs)
+'''
+
+def getSpecifications():
+    print(cpuinfo.cpu.info)
 
 
 if len(sys.argv) != 3:
