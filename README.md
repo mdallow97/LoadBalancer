@@ -10,13 +10,10 @@ Dataflow when Computation Node becomes active (PART 2):
 Connect to director –> provide director with HW Specifications –> Director adds node to log, will now be considered for computations
 
 
-Current Functionality (5/28/19):
-Connect to Director –> send 2 matrices –> randomly select computation node [$] and send 2 matrices –> computation node does the multiplication, prints to stdout for debugging purposes –> sends result back to Director, Director prints it –> [$$]
+Current Functionality (6/2/19):
+Connect to Director –> send 2 matrices –> randomly select computation node [$] and send 2 matrices –> computation node does the multiplication –> sends result back to Director, Director forwards result back to original user,
 
 [$]: This should be changed from random to whatever load balancing alg we choose. The alg should depend on computation nodes hardware, which means we can't implement this part until PART 2 is complete (director needs hw specifications)
-
-[$$]: I cannot seem to get the result from the leader back to the user (final step of PART 1)
-
 
 Instructions on How to Run:
 NOTE: This program will not work flawlessly because it is so far designed to be implemented across multiple machines (but has not been tested on multiple machines)
