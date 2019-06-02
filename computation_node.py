@@ -6,6 +6,7 @@ import socket, pickle
 import sys
 import helper
 import cpuinfo
+import gpuinfo
 
 from helper import Specifications
 
@@ -23,12 +24,12 @@ def multiplyMatrices(matrix_couple):
     return result
 
 def getSpecifications():
-    #Get CPU information
+    # Get CPU information
     # Assumes all CPUs on one system are the same
     cpu_model = cpuinfo.cpu.info[0]['model name']
     cpu_cores = cpuinfo.cpu.info[0]['cpu cores']
     num_cpus  = len(cpuinfo.cpu.info)
-    
+
     index = 0
     for i in range(len(cpu_model)):
         if cpu_model[i] == '@':
@@ -42,8 +43,12 @@ def getSpecifications():
         clock_rate_str += cpu_model[i]
 
     clock_rate = float(clock_rate_str)
-    
-        
+
+    # Get GPU information
+    users = gpuinfo.get_users()
+    print(users)
+
+
 if len(sys.argv) != 3:
     print("Format: python computation_node.py <Director_IP> <Director_Port>")
     exit()
