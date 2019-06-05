@@ -9,7 +9,7 @@ from helper import CPUSpecifications
 from helper import NodeInfo
 
 def updateSpecs(addr, specs):
-    node_conns[str(addr)].setWeight(calcWeight(specs))
+    node_conns[addr[0]].setWeight(calcWeight(specs))
 
 def acceptUser():
     while 1:
@@ -18,7 +18,8 @@ def acceptUser():
         if addr[0] in nodes:
             print("Connection activated from node with address ", addr)
             #node_conns.append(conn)
-            node_conns[str(addr)].con = (helper.NodeInfo(conn))
+            node_conns[addr[0]] = helper.NodeInfo(conn)
+            print(list(node_conns))
         else:
             print("Connection from new user with address ", addr)
             users.append((conn, addr))
@@ -58,9 +59,9 @@ def receiveRequest(conn, addr):
 
 def calcWeight(specifications):
     w = 1.0
-    w = w * specifications.num_CPUs
-    w = w * specifications.num_cores
-    w = w * specifications.frequency
+    w *= float(specifications.num_CPUs)
+    w *= float(specifications.num_cores)
+    w *= float(specifications.frequency)
     
     return w
 
@@ -96,17 +97,17 @@ def distributeLoad():
         sendNextJob(key)#TODO: this may need to be casted
 
 def needJob(addr):
-    node_conns[addr].waiting = True
+    node_conns[addr[0]].waiting = True
     sendNextJob(addr)
 
 def sendNextJob(addr):
-    if node_conns[addr].waiting == True:
+    if node_conns[addr[0]].waiting == True:
         if not len(jobs) == 0:
-            conn = node_conns[addr].conn
+            conn = node_conns[addr[0]].conn
             job = jobs[0]
             jobs.pop()
-            conn.send(pickle.dumps(node_conns[addr].jobs[0]))
-            node_conns[addr].waiting = False
+            conn.send(pickle.dumps(node_conns[addr[0]].jobs[0]))
+            node_conns[addr[0]].waiting = False
 
 # Get local host name (IP)
 hostname = socket.gethostname()
