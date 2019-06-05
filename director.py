@@ -46,8 +46,9 @@ def receiveRequest(conn, addr):
         else:
             print("Not able to send result back to user")
 
-    elif type(x) == helper.Specifications:
-        updateLog(addr, x)
+    elif type(x) == helper.CPUSpecifications:
+        hw_specs_log.append((addr, x))
+        print(hw_specs_log)
     else:
         print("ERROR")
 
@@ -82,6 +83,7 @@ users = []
 nodes = []
 node_conns = []
 matrix_couple_queue = []
+hw_specs_log = []
 
 if len(sys.argv) < 2:
     print("Format: python director.py <node1> <node2> <node3> <etc.>")
