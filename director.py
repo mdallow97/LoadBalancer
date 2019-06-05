@@ -5,8 +5,11 @@ import threading
 import helper
 import random
 
-def updateLog(addr, specs):
-    print("update")
+from helper import Specifications
+from helper import NodeInfo
+
+def updateSpecs(addr, specs):
+    node_conns[str(addr)].setWeight(calcWeight(specs))
 
 def acceptUser():
     while 1:
@@ -14,7 +17,8 @@ def acceptUser():
 
         if addr[0] in nodes:
             print("Connection activated from node with address ", addr)
-            node_conns.append(conn)
+            #node_conns.append(conn)
+            node_conns[str(addr)].con = (helper.NodeInfo(conn))
         else:
             print("Connection from new user with address ", addr)
             users.append((conn, addr))
@@ -36,7 +40,7 @@ def receiveRequest(conn, addr):
         matrix_couple_queue.append(x)
 
     elif type(x) == helper.ResultMatrix:
-
+        needJob(addr)
         original_addr = x.getUser()
         for addr_tuple in users:
             print(addr_tuple[1], " vs ", original_addr)
@@ -47,11 +51,31 @@ def receiveRequest(conn, addr):
             print("Not able to send result back to user")
 
     elif type(x) == helper.CPUSpecifications:
-        hw_specs_log.append((addr, x))
+        updateSpecs(addr, x)
         
     else:
         print("ERROR")
 
+def calcWeight(specifications):
+    w = 1.0
+    w = w * specifications.num_CPUs
+    w = w * specifications.num_cores
+    w = w * specifications.frequency
+    
+    return w
+
+def randomDist():
+    return random.choice(list(node_conns))
+
+def WLC():
+    key = ""
+    lowestLoad = float("inf")#initialize to pos infinity
+    for i in list(node_conns):
+        temp = node_conns[i].getJobsSize()
+        if temp < lowestLoad:
+            key = i
+            lowestLoad = temp
+    return key
 
 def distributeLoad():
     while 1:
@@ -59,19 +83,30 @@ def distributeLoad():
             # Queue is empty, wait
             continue
 
-        # This is the algorithm to distribute work (balance load)
-        # RIGHT NOW IT IS RANDOM
         if len(node_conns) == 0:
             print("No nodes available")
             continue
 
-
-        index = random.randint(0, len(node_conns)-1)
-        conn = node_conns[index]
-
+        # This is the algorithm to distribute work (balance load)
+        # RIGHT NOW IT IS WLC
+        key = WLC()
+        
         matrix_couple = matrix_couple_queue.pop()
-        conn.send(pickle.dumps(matrix_couple))
+        node_conns[key].jobs.append(matrix_couple)
+        sendNextJob(key)#TODO: this may need to be casted
 
+def needJob(addr):
+    node_conns[addr].waiting = True
+    sendNextJob(addr)
+
+def sendNextJob(addr):
+    if node_conns[addr].waiting == True:
+        if not len(jobs) == 0:
+            conn = node_conns[addr].conn
+            job = jobs[0]
+            jobs.pop()
+            conn.send(pickle.dumps(node_conns[addr].jobs[0]))
+            node_conns[addr].waiting = False
 
 # Get local host name (IP)
 hostname = socket.gethostname()
@@ -81,7 +116,7 @@ BUFFER_SIZE = 1024
 
 users = []
 nodes = []
-node_conns = []
+node_conns = {}
 matrix_couple_queue = []
 hw_specs_log = []
 

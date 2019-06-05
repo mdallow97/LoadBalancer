@@ -51,6 +51,33 @@ class CPUSpecifications:
     def getMemorySize(self):
         return self.mem_size
 
+class NodeInfo:
+    # can hold different hw specifications
+    def __init__(self, connection):
+        # [0]: socket connection
+        self.con = connection
+        self.wt = 1.0
+        self.jobs = []
+        self.waiting = True
+
+    def setWeight(self, weight):
+        self.wt = weight
+
+    def appendJob(self, job):
+        self.jobs.append(job)
+
+    def getWeight(self):
+        return self.weight
+
+    def getJobs(self):
+        return self.jobs
+
+    def getJobsSize(self):
+        #calc combined weight of all jobs
+        total = 0.0
+        for i in jobs:
+            total = total + float(jobs[i].getSize()) * (1.0 / float(self.getWeight()))
+        return total
 
 def printMatrix(matrix, n):
     for i in range(n):
