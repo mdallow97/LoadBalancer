@@ -3,6 +3,9 @@ import socket, pickle
 import sys
 import random
 import helper
+import time
+
+test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
 
 if len(sys.argv) != 3:
     print("Format: python user.py <Director_IP> <Director_Port>")
@@ -15,41 +18,69 @@ director_port = int(sys.argv[2])
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
 
-while 1:
-    # Get input matrix from stdin (assume all matrices are square [nxn])
-    # Package matrix into class
-    # Send matrices to director
-    # Wait for response from director
+print("Run tests? (y/n): ")
+reply = input()
 
-    print("Enter N for the two NxN matrices to be multiplied: ")
-    size = input()
+if reply == 'n':
+    while 1:
+        # Get input matrix from stdin (assume all matrices are square [nxn])
+        # Package matrix into class
+        # Send matrices to director
+        # Wait for response from director
 
-    if size == "exit":
+        print("Enter N for the two NxN matrices to be multiplied: ")
+        size = input()
+
+        if size == "exit":
+            exit()
+
+        n = int(size)
+        matrix1 = [[0] * n for i in range(0, n)]
+        matrix2 = [[0] * n for i in range(0, n)]
+        for i in range(0, n):
+            for j in range(0, n):
+                matrix1[i][j] = random.randint(0, 500)
+                matrix2[i][j] = random.randint(0, 500)
+
+        print("\n\tMatrix A")
+        helper.printMatrix(matrix1, n)
+        print("\n\n\n\tMatrix B\n")
+        helper.printMatrix(matrix2, n)
+
+        matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
+        s.send(pickle.dumps(matrix_set))
+
+
+        data = None
+        while not data:
+            data = s.recv(BUFFER_SIZE)
+
+        result = pickle.loads(data)
+
+        print("\n\tResulting Matrix")
+        helper.printMatrix(result.getResult(), result.getSize())
+else:
+    print("How many test files (out of 6): ")
+    num_tests = input()
+
+    if num_tests > 7:
+        print("No more than 7 tests")
         exit()
 
-    n = int(size)
-    matrix1 = [[0] * n for i in range(0, n)]
-    matrix2 = [[0] * n for i in range(0, n)]
-    for i in range(0, n):
-        for j in range(0, n):
-            matrix1[i][j] = random.randint(0, 500)
-            matrix2[i][j] = random.randint(0, 500)
+    for i in range(num_tests):
+        index = random.randint(0, num_tests)
+        filename = "matrix-dir" + test_names[index]
 
-    print("\n\tMatrix A")
-    helper.printMatrix(matrix1, n)
-    print("\n\n\n\tMatrix B\n")
-    helper.printMatrix(matrix2, n)
+        t0 = time.time()
+        matrix_file = open(filename, "rb")
+        s.send(matrix_file.read())
 
-    matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
-    s.send(pickle.dumps(matrix_set))
+        data = None
+        while not data:
+            data = s.recv(BUFFER_SIZE)
 
+        result = pickle.loads(data)
 
-    # NOT ABLE TO SEND DATA BACK YET
-    data = None
-    while not data:
-        data = s.recv(BUFFER_SIZE)
+        t1 = time.time()
 
-    result = pickle.loads(data)
-
-    print("\n\tResulting Matrix")
-    helper.printMatrix(result.getResult(), result.getSize())
+        print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)
