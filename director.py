@@ -5,7 +5,7 @@ import threading
 import helper
 import random
 
-from helper import Specifications
+from helper import CPUSpecifications
 from helper import NodeInfo
 
 def updateSpecs(addr, specs):
