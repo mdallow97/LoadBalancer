@@ -42,7 +42,7 @@ def getSpecifications():
 
     clock_rate = float(clock_rate_str)
 
-    return CPUSpecifications(num_cpus, num_cores, clock_rate)
+    return CPUSpecifications(num_cpus, cpu_cores, clock_rate)
 
 
 if len(sys.argv) != 3:

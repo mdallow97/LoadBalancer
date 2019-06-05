@@ -48,7 +48,7 @@ def receiveRequest(conn, addr):
 
     elif type(x) == helper.CPUSpecifications:
         hw_specs_log.append((addr, x))
-        print(hw_specs_log)
+        
     else:
         print("ERROR")
 
