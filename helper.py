@@ -76,7 +76,7 @@ class NodeInfo:
         #calc combined weight of all jobs
         total = 0.0
         for i in jobs:
-            total = total + float(jobs[i].getSize()) * (1.0 / float(self.getWeight()))
+            total = total + 2.0 * float(jobs[i].getSize() ** 2) * (1.0 / float(self.getWeight()))
         return total
 
 def printMatrix(matrix, n):
