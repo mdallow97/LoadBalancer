@@ -19,7 +19,6 @@ def acceptUser():
             print("Connection activated from node with address ", addr)
             #node_conns.append(conn)
             node_conns[addr[0]] = helper.NodeInfo(conn)
-            print(list(node_conns))
         else:
             print("Connection from new user with address ", addr)
             users.append((conn, addr))
@@ -41,7 +40,7 @@ def receiveRequest(conn, addr):
         matrix_couple_queue.append(x)
 
     elif type(x) == helper.ResultMatrix:
-        needJob(addr)
+        needJob(addr[0])
         original_addr = x.getUser()
         for addr_tuple in users:
             print(addr_tuple[1], " vs ", original_addr)
@@ -96,18 +95,18 @@ def distributeLoad():
         node_conns[key].jobs.append(matrix_couple)
         sendNextJob(key)#TODO: this may need to be casted
 
-def needJob(addr):
-    node_conns[addr[0]].waiting = True
-    sendNextJob(addr)
+def needJob(key):
+    node_conns[key].waiting = True
+    sendNextJob(key)
 
-def sendNextJob(addr):
-    if node_conns[addr[0]].waiting == True:
-        if not len(jobs) == 0:
-            conn = node_conns[addr[0]].conn
-            job = jobs[0]
-            jobs.pop()
-            conn.send(pickle.dumps(node_conns[addr[0]].jobs[0]))
-            node_conns[addr[0]].waiting = False
+def sendNextJob(key):
+    if node_conns[key].waiting == True:
+        if not len(node_conns[key].jobs) == 0:
+            conn = node_conns[key].con
+            job = node_conns[key].jobs[0]
+            node_conns[key].jobs.pop()
+            conn.send(pickle.dumps(node_conns[key].jobs[0]))
+            node_conns[key].waiting = False
 
 # Get local host name (IP)
 hostname = socket.gethostname()
