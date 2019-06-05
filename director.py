@@ -50,15 +50,18 @@ def receiveRequest(conn, addr):
         else:
             print("Not able to send result back to user")
 
-    elif type(x) == helper.Specifications:
+    elif type(x) == helper.CPUSpecifications:
         updateSpecs(addr, x)
+        
     else:
         print("ERROR")
 
 def calcWeight(specifications):
     w = 1.0
-    for i in range (0,3):
-        w = w * float(getSpecifications().getCPU()[i])
+    w = w * specifications.num_CPUs
+    w = w * specifications.num_cores
+    w = w * specifications.frequency
+    
     return w
 
 def randomDist():
@@ -115,6 +118,7 @@ users = []
 nodes = []
 node_conns = {}
 matrix_couple_queue = []
+hw_specs_log = []
 
 if len(sys.argv) < 2:
     print("Format: python director.py <node1> <node2> <node3> <etc.>")

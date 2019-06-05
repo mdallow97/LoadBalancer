@@ -6,9 +6,7 @@ import socket, pickle
 import sys
 import helper
 import cpuinfo
-
-
-from helper import Specifications
+from helper import CPUSpecifications
 
 def multiplyMatrices(matrix_couple):
     n = matrix_couple.getSize()
@@ -44,14 +42,7 @@ def getSpecifications():
 
     clock_rate = float(clock_rate_str)
 
-    hardware = helper.Specifications(num_cpus, cpu_cores, clock_rate)
-
-
-    # Get GPU information
-    
-
-    # Return Specifications
-    return hardware 
+    return CPUSpecifications(num_cpus, cpu_cores, clock_rate)
 
 
 if len(sys.argv) != 3:
@@ -63,12 +54,11 @@ BUFFER_SIZE = 1024
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
 
-hw_specs = getSpecifications()
-
-
-
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
+
+hw_specs = getSpecifications()
+s.send(pickle.dumps(hw_specs))
 
 # Get specifications
 # Load into class

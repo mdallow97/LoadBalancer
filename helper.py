@@ -37,33 +37,19 @@ class ResultMatrix:
     def getUser(self):
         return self.user
 
-class Specifications:
+class CPUSpecifications:
     # can hold different hw specifications
-    def __init__(self, num_CPUs, num_CPU_cores, CPU_freq):
+    def __init__(self, num_CPUs, num_cores, frequency):
         # [0]: number processors, [1]: number cores, [2]: frequency
-        self.CPU = []
-        self.GPU = []
-
-        self.CPU.append(num_CPUs)
-        self.CPU.append(num_CPU_cores)
-        self.CPU.append(CPU_freq)
-
-    def setGPU(self, num_GPUs, frequency, num_cores):
-        self.GPU.append(num_GPUs)
-        self.GPU.append(num_cores)
-        self.GPU.append(frequency)
+        self.num_CPUs = num_CPUs
+        self.num_cores = num_cores
+        self.frequency = frequency
 
     def setMemorySize(self, mem_size):
         self.mem_size = mem_size
 
     def getMemorySize(self):
         return self.mem_size
-
-    def getCPU(self):
-        return self.CPU
-
-    def getGPU(self):
-        return self.GPU
 
 class NodeInfo:
     # can hold different hw specifications
@@ -99,5 +85,3 @@ def printMatrix(matrix, n):
         for j in range(n):
             print(matrix[i][j], end=" ")
     print("\n\n")
-
-# Will later do parsing of hw specifications
