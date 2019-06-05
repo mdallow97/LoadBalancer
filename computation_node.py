@@ -6,8 +6,7 @@ import socket, pickle
 import sys
 import helper
 import cpuinfo
-
-from helper import Specifications
+from helper import CPUSpecifications
 
 def multiplyMatrices(matrix_couple):
     n = matrix_couple.getSize()
@@ -43,7 +42,7 @@ def getSpecifications():
 
     clock_rate = float(clock_rate_str)
 
-    return helper.CPUSpecifications(num_cpus, num_cores, clock_rate)
+    return CPUSpecifications(num_cpus, num_cores, clock_rate)
 
 
 if len(sys.argv) != 3:
