@@ -28,6 +28,7 @@ def acceptUser():
 
 
 def receiveRequest(conn, addr):
+    print("recieveRequest")
     data = None
 
     while not data:
@@ -35,11 +36,13 @@ def receiveRequest(conn, addr):
 
     x = pickle.loads(data)
     if type(x) == helper.MatrixCouple:
+        print("recieved matrix couple")
         x.setUser(addr)
 
         matrix_couple_queue.append(x)
 
     elif type(x) == helper.ResultMatrix:
+        print("recieved result matrix")
         needJob(addr[0])
         original_addr = x.getUser()
         for addr_tuple in users:
@@ -51,6 +54,7 @@ def receiveRequest(conn, addr):
             print("Not able to send result back to user")
 
     elif type(x) == helper.CPUSpecifications:
+        print("recieved specs")
         updateSpecs(addr, x)
         
     else:
@@ -68,6 +72,7 @@ def randomDist():
     return random.choice(list(node_conns))
 
 def WLC():
+    print("WLC")
     key = ""
     lowestLoad = float("inf")#initialize to pos infinity
     for i in list(node_conns):
@@ -77,7 +82,18 @@ def WLC():
             lowestLoad = temp
     return key
 
+RR_index = 0
+
+def RR():
+    print("RR")
+    key = list(node_conns)[RR_index]
+    RR_index += 1
+    if RR_index >= len(node_conns):
+        RR_index = 0
+    return key
+
 def distributeLoad():
+    print("distributeLoad")
     while 1:
         if not matrix_couple_queue:
             # Queue is empty, wait
@@ -96,10 +112,12 @@ def distributeLoad():
         sendNextJob(key)#TODO: this may need to be casted
 
 def needJob(key):
+    print("needJob")
     node_conns[key].waiting = True
     sendNextJob(key)
 
 def sendNextJob(key):
+    print("sendNextJob")
     if node_conns[key].waiting == True:
         if not len(node_conns[key].jobs) == 0:
             conn = node_conns[key].con

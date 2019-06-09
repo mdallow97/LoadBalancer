@@ -69,6 +69,7 @@ while 1:
     if not data:
         continue
 
+    print("recieved data")
     matrix_couple = pickle.loads(data)
 
     if not type(matrix_couple) == helper.MatrixCouple:
@@ -78,4 +79,5 @@ while 1:
     result = multiplyMatrices(matrix_couple)
     return_val = helper.ResultMatrix(result, matrix_couple.getSize(), matrix_couple.getUser())
 
+    print("send data back")
     s.send(pickle.dumps(return_val))
