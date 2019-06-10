@@ -7,6 +7,7 @@ import time
 import threading
 from time import sleep
 
+# Threaded function that receives results
 def recvMatrice(s, i):
     data = helper.recv_msg(s)
     result = pickle.loads(data)
@@ -91,3 +92,4 @@ else:
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
         sleep(5)
+        # JOBS GETTING SENT BEFORE THEY RETURN, MIXING OF DATA??
