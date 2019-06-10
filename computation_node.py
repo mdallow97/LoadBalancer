@@ -69,6 +69,7 @@ while 1:
     data = helper.recv_msg(s)
 
 
+    print("recieved data")
     matrix_couple = pickle.loads(data)
 
     if not type(matrix_couple) == helper.MatrixCouple:
