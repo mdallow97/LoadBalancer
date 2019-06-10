@@ -7,6 +7,7 @@ import random
 
 from helper import CPUSpecifications
 from helper import NodeInfo
+from time import sleep
 
 def updateSpecs(addr, specs):
     node_conns[addr[0]].setWeight(calcWeight(specs))
@@ -28,41 +29,34 @@ def acceptUser():
 
 
 def receiveRequest(conn, addr):
-    data = None
+    while 1:
+        data = helper.recv_msg(conn)
+        if not data:
+            continue
 
-    while not data:
-        data = conn.recv(BUFFER_SIZE)
+        x = pickle.loads(data)
+        if type(x) == helper.MatrixCouple:
+            x.setUser(addr)
 
-    x = pickle.loads(data)
-    if type(x) == helper.MatrixCouple:
-        x.setUser(addr)
+            matrix_couple_queue.append(x)
 
-        matrix_couple_queue.append(x)
+        elif type(x) == helper.ResultMatrix:
+            needJob(addr[0])
+            return_queue.append(x)
 
-    elif type(x) == helper.ResultMatrix:
-        needJob(addr[0])
-        original_addr = x.getUser()
-        for addr_tuple in users:
-            print(addr_tuple[1], " vs ", original_addr)
-            if addr_tuple[1] == original_addr:
-                addr_tuple[0].send(pickle.dumps(x))
-                break
+
+        elif type(x) == helper.CPUSpecifications:
+            updateSpecs(addr, x)
+
         else:
-            print("Not able to send result back to user")
-
-    elif type(x) == helper.CPUSpecifications:
-        print("recieved specs")
-        updateSpecs(addr, x)
-        
-    else:
-        print("ERROR")
+            print("ERROR")
 
 def calcWeight(specifications):
     w = 1.0
     w *= float(specifications.num_CPUs)
     w *= float(specifications.num_cores)
     w *= float(specifications.frequency)
-    
+
     return w
 
 def randomDist():
@@ -102,7 +96,7 @@ def distributeLoad():
         # This is the algorithm to distribute work (balance load)
         # RIGHT NOW IT IS WLC
         key = WLC()
-        
+
         matrix_couple = matrix_couple_queue.pop()
         node_conns[key].jobs.append(matrix_couple)
         sendNextJob(key)#TODO: this may need to be casted
@@ -119,20 +113,35 @@ def sendNextJob(key):
             conn = node_conns[key].con
             job = node_conns[key].jobs[0]
             node_conns[key].jobs.pop()
-            conn.send(pickle.dumps(job))
+            helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
 
+def returnToSender():
+    while 1:
+        if not return_queue:
+            continue
+
+        x = return_queue.pop()
+        original_addr = x.getUser()
+        for addr_tuple in users:
+            if addr_tuple[1] == original_addr:
+                helper.send_msg(addr_tuple[0], pickle.dumps(x))
+                break
+        else:
+            print("Not able to send result back to user")
+
+        print("Matrix of size ", x.getSize(), " returned to sender")
+        
 # Get local host name (IP)
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)
 port = 0
-BUFFER_SIZE = 1024
 
 users = []
 nodes = []
 node_conns = {}
 matrix_couple_queue = []
-hw_specs_log = []
+return_queue = []
 
 if len(sys.argv) < 2:
     print("Format: python director.py <node1> <node2> <node3> <etc.>")
@@ -153,6 +162,8 @@ print("Director with address ", host, "and port ", port)
 # Two threads: One for distributing load, another for receiving incoming requests
 distribute_load_thread = threading.Thread(target=distributeLoad)
 accept_new_user_thread = threading.Thread(target=acceptUser)
+return_result_thread   = threading.Thread(target=returnToSender)
 
 distribute_load_thread.start()
 accept_new_user_thread.start()
+return_result_thread.start()

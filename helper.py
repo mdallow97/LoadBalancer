@@ -1,10 +1,12 @@
 # Parser
+import struct
 
 class MatrixCouple:
     def __init__(self, matrix1, matrix2, n, user_addr=None):
         self.matrix1 = matrix1
         self.matrix2 = matrix2
         self.n = n
+        self.time = 0
 
     def getMatrix1(self):
         return self.matrix1
@@ -15,9 +17,15 @@ class MatrixCouple:
     def setUser(self, user):
         self.user = user
 
+    def setTime(self, time):
+        self.time = time
+
     def getUser(self):
         if self.user:
             return self.user
+
+    def getTime(self):
+        return self.time
 
     def getSize(self):
         return self.n
@@ -36,6 +44,12 @@ class ResultMatrix:
 
     def getUser(self):
         return self.user
+
+    def setTime(self, time):
+        self.time = time
+
+    def getTime(self):
+        return self.time
 
 class CPUSpecifications:
     # can hold different hw specifications
@@ -78,6 +92,28 @@ class NodeInfo:
         for i in self.jobs:
             total = total + 2.0 * float(self.jobs[i].getSize() ** 2) * (1.0 / float(self.getWeight()))
         return total
+
+def send_msg(socket, msg):
+    print("Bytes sent: ", len(msg))
+    msg = struct.pack('>I', len(msg)) + msg
+    socket.sendall(msg)
+
+def recv_msg(socket):
+    raw_msg_len = recvall(socket, 4)
+    if not raw_msg_len:
+        return None
+    msglen = struct.unpack('>I', raw_msg_len)[0]
+    data = recvall(socket, msglen)
+    print("Bytes received: ", len(data))
+    return data
+
+def recvall(socket, n):
+    data = b''
+    while len(data) < n:
+        packet = socket.recv(n - len(data))
+        if not packet: return None
+        data += packet
+    return data
 
 def printMatrix(matrix, n):
     for i in range(n):
