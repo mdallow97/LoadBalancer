@@ -40,7 +40,7 @@ def receiveRequest(conn, addr):
             matrix_couple_queue.append(x)
 
         elif type(x) == helper.ResultMatrix:
-            needJob(addr)
+            needJob(addr[0])
             original_addr = x.getUser()
             for addr_tuple in users:
                 if addr_tuple[1] == original_addr:
