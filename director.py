@@ -29,31 +29,32 @@ def acceptUser():
 
 
 def receiveRequest(conn, addr):
-    data = helper.recv_msg(conn)
+    while 1:
+        data = helper.recv_msg(conn)
+        if not data:
+            continue
 
-    print("Data Received!: ", len(data))
-    x = pickle.loads(data)
-    if type(x) == helper.MatrixCouple:
-        x.setUser(addr)
+        x = pickle.loads(data)
+        if type(x) == helper.MatrixCouple:
+            x.setUser(addr)
 
-        matrix_couple_queue.append(x)
+            matrix_couple_queue.append(x)
 
-    elif type(x) == helper.ResultMatrix:
-        needJob(addr)
-        original_addr = x.getUser()
-        for addr_tuple in users:
-            if addr_tuple[1] == original_addr:
-                helper.send_msg(addr_tuple[0], pickle.dumps(x))
-                print("Result sent back to user!")
-                break
+        elif type(x) == helper.ResultMatrix:
+            needJob(addr)
+            original_addr = x.getUser()
+            for addr_tuple in users:
+                if addr_tuple[1] == original_addr:
+                    helper.send_msg(addr_tuple[0], pickle.dumps(x))
+                    break
+            else:
+                print("Not able to send result back to user")
+
+        elif type(x) == helper.CPUSpecifications:
+            updateSpecs(addr, x)
+
         else:
-            print("Not able to send result back to user")
-
-    elif type(x) == helper.CPUSpecifications:
-        updateSpecs(addr, x)
-
-    else:
-        print("ERROR")
+            print("ERROR")
 
 def calcWeight(specifications):
     w = 1.0
@@ -106,7 +107,6 @@ def sendNextJob(addr):
             jobs.pop()
             data = pickle.dumps(node_conns[addr[0]].jobs[0])
             helper.send_msg(conn, data)
-            print("Bits sent to node: ", len(data))
             node_conns[addr[0]].waiting = False
 
 # Get local host name (IP)

@@ -1,4 +1,5 @@
 # Parser
+import struct
 
 class MatrixCouple:
     def __init__(self, matrix1, matrix2, n, user_addr=None):
@@ -80,6 +81,7 @@ class NodeInfo:
         return total
 
 def send_msg(socket, msg):
+    print("Bytes sent: ", len(msg))
     msg = struct.pack('>I', len(msg)) + msg
     socket.sendall(msg)
 
@@ -88,7 +90,9 @@ def recv_msg(socket):
     if not raw_msg_len:
         return None
     msglen = struct.unpack('>I', raw_msg_len)[0]
-    return recvall(socket, msglen)
+    data = recvall(socket, msglen)
+    print("Bytes received: ", len(data))
+    return data
 
 def recvall(socket, n):
     data = b''

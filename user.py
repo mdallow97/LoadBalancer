@@ -4,6 +4,23 @@ import sys
 import random
 import helper
 import time
+import threading
+
+def sendMatrice(index):
+    filename = "matrix-dir/" + test_names[index]
+
+    t0 = time.time()
+    matrix_file = open(filename, "rb")
+    file_data = matrix_file.read()
+    helper.send_msg(s, file_data)
+
+    data = helper.recv_msg(s)
+    result = pickle.loads(data)
+
+    t1 = time.time()
+    print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)
+
+
 
 test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
 
@@ -62,18 +79,11 @@ else:
         print("No more than 7 tests")
         exit()
 
+    _matrices_threads = []
     for i in range(num_tests):
-        index = random.randint(0, num_tests - 1)
-        filename = "matrix-dir/" + test_names[index]
+        matrice_thread = threading.Thread(target=sendMatrice, args=(i,))
+        send_matrices_threads.append(matrice_thread)
+        matrice_thread.start()
 
-        t0 = time.time()
-        matrix_file = open(filename, "rb")
-        file_data = matrix_file.read()
-        helper.send_msg(s, file_data)
-        print("Bits sent: ", len(file_data))
-
-        data = helper.recv_msg(s)
-        result = pickle.loads(data)
-
-        t1 = time.time()
-        print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)
+    for thread in send_matrices_threads:
+        thread.join()

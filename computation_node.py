@@ -59,7 +59,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
 
 hw_specs = getSpecifications()
-s.send(pickle.dumps(hw_specs))
+helper.send_msg(s, pickle.dumps(hw_specs))
 
 # Get specifications
 # Load into class
@@ -67,7 +67,7 @@ s.send(pickle.dumps(hw_specs))
 
 while 1:
     data = helper.recv_msg(s)
-    print("Data Received!: ", len(data))
+
 
     matrix_couple = pickle.loads(data)
 
