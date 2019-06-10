@@ -28,7 +28,6 @@ def acceptUser():
 
 
 def receiveRequest(conn, addr):
-    print("recieveRequest")
     data = None
 
     while not data:
@@ -36,13 +35,11 @@ def receiveRequest(conn, addr):
 
     x = pickle.loads(data)
     if type(x) == helper.MatrixCouple:
-        print("recieved matrix couple")
         x.setUser(addr)
 
         matrix_couple_queue.append(x)
 
     elif type(x) == helper.ResultMatrix:
-        print("recieved result matrix")
         needJob(addr[0])
         original_addr = x.getUser()
         for addr_tuple in users:
@@ -93,7 +90,6 @@ def RR():
     return key
 
 def distributeLoad():
-    print("distributeLoad")
     while 1:
         if not matrix_couple_queue:
             # Queue is empty, wait
