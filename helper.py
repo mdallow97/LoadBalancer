@@ -35,7 +35,7 @@ class MatrixCouple:
         return self.label
 
 class ResultMatrix:
-    def __init__(self, result, n, user, label):
+    def __init__(self, result, n, label, user):
         self.result = result
         self.n = n
         self.user = user
