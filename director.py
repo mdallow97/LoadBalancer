@@ -7,6 +7,7 @@ import random
 
 from helper import CPUSpecifications
 from helper import NodeInfo
+from time import sleep
 
 def updateSpecs(addr, specs):
     node_conns[addr[0]].setWeight(calcWeight(specs))
@@ -41,13 +42,8 @@ def receiveRequest(conn, addr):
 
         elif type(x) == helper.ResultMatrix:
             needJob(addr)
-            original_addr = x.getUser()
-            for addr_tuple in users:
-                if addr_tuple[1] == original_addr:
-                    helper.send_msg(addr_tuple[0], pickle.dumps(x))
-                    break
-            else:
-                print("Not able to send result back to user")
+            return_queue.append(x)
+
 
         elif type(x) == helper.CPUSpecifications:
             updateSpecs(addr, x)
@@ -120,6 +116,23 @@ def sendNextJob(key):
             helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
 
+def returnToSender():
+    while 1:
+        if not return_queue:
+            continue
+
+        x = return_queue.pop()
+        original_addr = x.getUser()
+        for addr_tuple in users:
+            if addr_tuple[1] == original_addr:
+                helper.send_msg(addr_tuple[0], pickle.dumps(x))
+                break
+        else:
+            print("Not able to send result back to user")
+
+        print("Matrix of size ", x.getSize(), " returned to sender")
+        sleep(0.5)
+
 # Get local host name (IP)
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)
@@ -129,7 +142,7 @@ users = []
 nodes = []
 node_conns = {}
 matrix_couple_queue = []
-hw_specs_log = []
+return_queue = []
 
 if len(sys.argv) < 2:
     print("Format: python director.py <node1> <node2> <node3> <etc.>")
@@ -150,6 +163,8 @@ print("Director with address ", host, "and port ", port)
 # Two threads: One for distributing load, another for receiving incoming requests
 distribute_load_thread = threading.Thread(target=distributeLoad)
 accept_new_user_thread = threading.Thread(target=acceptUser)
+return_result_thread   = threading.Thread(target=returnToSender)
 
 distribute_load_thread.start()
 accept_new_user_thread.start()
+return_result_thread.start()

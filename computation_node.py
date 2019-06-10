@@ -78,5 +78,6 @@ while 1:
 
     result = multiplyMatrices(matrix_couple)
     return_val = helper.ResultMatrix(result, matrix_couple.getSize(), matrix_couple.getUser())
+    return_val.setTime(matrix_couple.getTime())
 
     helper.send_msg(s, pickle.dumps(return_val))

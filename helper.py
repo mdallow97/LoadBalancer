@@ -6,6 +6,7 @@ class MatrixCouple:
         self.matrix1 = matrix1
         self.matrix2 = matrix2
         self.n = n
+        self.time = 0
 
     def getMatrix1(self):
         return self.matrix1
@@ -16,9 +17,15 @@ class MatrixCouple:
     def setUser(self, user):
         self.user = user
 
+    def setTime(self, time):
+        self.time = time
+
     def getUser(self):
         if self.user:
             return self.user
+
+    def getTime(self):
+        return self.time
 
     def getSize(self):
         return self.n
@@ -37,6 +44,12 @@ class ResultMatrix:
 
     def getUser(self):
         return self.user
+
+    def setTime(self, time):
+        self.time = time
+
+    def getTime(self):
+        return self.time
 
 class CPUSpecifications:
     # can hold different hw specifications

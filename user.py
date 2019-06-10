@@ -6,12 +6,12 @@ import helper
 import time
 import threading
 
-def recvMatrice(s, t0):
+def recvMatrice(s, i):
     data = helper.recv_msg(s)
     result = pickle.loads(data)
 
     t1 = time.time()
-    print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)
+    print("Time to multiply matrices of size ", result.getSize(), ": ", t1-result.getTime())
 
 # File names that contain raw matrice data
 test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
@@ -81,8 +81,11 @@ else:
         t0 = time.time()
         matrix_file = open(filename, "rb")
         file_data = matrix_file.read()
+        matrice = pickle.loads(file_data)
+        matrice.setTime(t0)
+        file_data = pickle.dumps(matrice)
         helper.send_msg(s, file_data)
 
-        matrice_thread = threading.Thread(target=recvMatrice, args=(s, t0))
+        matrice_thread = threading.Thread(target=recvMatrice, args=(s, i))
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
