@@ -76,7 +76,7 @@ else:
 
     send_matrice_threads = []
     for i in range(num_tests):
-        filename = "matrix-dir/" + test_names[index]
+        filename = "matrix-dir/" + test_names[i]
 
         t0 = time.time()
         matrix_file = open(filename, "rb")
