@@ -11,7 +11,6 @@ if len(sys.argv) != 3:
     print("Format: python user.py <Director_IP> <Director_Port>")
     exit()
 
-BUFFER_SIZE = 1024
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
 
@@ -48,39 +47,33 @@ if reply == 'n':
         helper.printMatrix(matrix2, n)
 
         matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
-        s.send(pickle.dumps(matrix_set))
+        helper.send_msg(s, pickle.dumps(matrix_set))
 
-
-        data = None
-        while not data:
-            data = s.recv(BUFFER_SIZE)
-
+        data = helper.recv_msg(s)
         result = pickle.loads(data)
 
         print("\n\tResulting Matrix")
         helper.printMatrix(result.getResult(), result.getSize())
 else:
-    print("How many test files (out of 6): ")
-    num_tests = input()
+    print("How many test files (out of 7): ")
+    num_tests = int(input())
 
     if num_tests > 7:
         print("No more than 7 tests")
         exit()
 
     for i in range(num_tests):
-        index = random.randint(0, num_tests)
-        filename = "matrix-dir" + test_names[index]
+        index = random.randint(0, num_tests - 1)
+        filename = "matrix-dir/" + test_names[index]
 
         t0 = time.time()
         matrix_file = open(filename, "rb")
-        s.send(matrix_file.read())
+        file_data = matrix_file.read()
+        helper.send_msg(s, file_data)
+        print("Bits sent: ", len(file_data))
 
-        data = None
-        while not data:
-            data = s.recv(BUFFER_SIZE)
-
+        data = helper.recv_msg(s)
         result = pickle.loads(data)
 
         t1 = time.time()
-
         print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)

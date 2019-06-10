@@ -79,6 +79,25 @@ class NodeInfo:
             total = total + 2.0 * float(jobs[i].getSize() ** 2) * (1.0 / float(self.getWeight()))
         return total
 
+def send_msg(socket, msg):
+    msg = struct.pack('>I', len(msg)) + msg
+    socket.sendall(msg)
+
+def recv_msg(socket):
+    raw_msg_len = recvall(socket, 4)
+    if not raw_msg_len:
+        return None
+    msglen = struct.unpack('>I', raw_msg_len)[0]
+    return recvall(socket, msglen)
+
+def recvall(socket, n):
+    data = b''
+    while len(data) < n:
+        packet = socket.recv(n - len(data))
+        if not packet: return None
+        data += packet
+    return data
+
 def printMatrix(matrix, n):
     for i in range(n):
         print("\n")

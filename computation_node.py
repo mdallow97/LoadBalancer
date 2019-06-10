@@ -6,19 +6,21 @@ import socket, pickle
 import sys
 import helper
 import cpuinfo
-from helper import CPUSpecifications
+import helper
 
 def multiplyMatrices(matrix_couple):
     n = matrix_couple.getSize()
     result = [[0] * n for i in range(0, n)]
     matrix1 = matrix_couple.getMatrix1()
     matrix2 = matrix_couple.getMatrix2()
+    print("Working..")
 
     for i in range(n):
         for j in range(n):
             for k in range(n):
                 result[i][j] += matrix1[i][k] * matrix2[k][j]
 
+    print("DONE")
     return result
 
 def getSpecifications():
@@ -42,7 +44,7 @@ def getSpecifications():
 
     clock_rate = float(clock_rate_str)
 
-    return CPUSpecifications(num_cpus, cpu_cores, clock_rate)
+    return helper.CPUSpecifications(num_cpus, cpu_cores, clock_rate)
 
 
 if len(sys.argv) != 3:
@@ -50,7 +52,6 @@ if len(sys.argv) != 3:
     exit()
 
 
-BUFFER_SIZE = 1024
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
 
@@ -65,9 +66,8 @@ s.send(pickle.dumps(hw_specs))
 # Send to director so that it may update the log
 
 while 1:
-    data = s.recv(BUFFER_SIZE)
-    if not data:
-        continue
+    data = helper.recv_msg(s)
+    print("Data Received!: ", len(data))
 
     matrix_couple = pickle.loads(data)
 
@@ -78,4 +78,4 @@ while 1:
     result = multiplyMatrices(matrix_couple)
     return_val = helper.ResultMatrix(result, matrix_couple.getSize(), matrix_couple.getUser())
 
-    s.send(pickle.dumps(return_val))
+    helper.send_msg(s, pickle.dumps(return_val))

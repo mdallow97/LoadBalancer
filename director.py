@@ -29,11 +29,9 @@ def acceptUser():
 
 
 def receiveRequest(conn, addr):
-    data = None
+    data = helper.recv_msg(conn)
 
-    while not data:
-        data = conn.recv(BUFFER_SIZE)
-
+    print("Data Received!: ", len(data))
     x = pickle.loads(data)
     if type(x) == helper.MatrixCouple:
         x.setUser(addr)
@@ -44,16 +42,16 @@ def receiveRequest(conn, addr):
         needJob(addr)
         original_addr = x.getUser()
         for addr_tuple in users:
-            print(addr_tuple[1], " vs ", original_addr)
             if addr_tuple[1] == original_addr:
-                addr_tuple[0].send(pickle.dumps(x))
+                helper.send_msg(addr_tuple[0], pickle.dumps(x))
+                print("Result sent back to user!")
                 break
         else:
             print("Not able to send result back to user")
 
     elif type(x) == helper.CPUSpecifications:
         updateSpecs(addr, x)
-        
+
     else:
         print("ERROR")
 
@@ -62,7 +60,7 @@ def calcWeight(specifications):
     w *= float(specifications.num_CPUs)
     w *= float(specifications.num_cores)
     w *= float(specifications.frequency)
-    
+
     return w
 
 def randomDist():
@@ -91,7 +89,7 @@ def distributeLoad():
         # This is the algorithm to distribute work (balance load)
         # RIGHT NOW IT IS WLC
         key = WLC()
-        
+
         matrix_couple = matrix_couple_queue.pop()
         node_conns[key].jobs.append(matrix_couple)
         sendNextJob(key)#TODO: this may need to be casted
@@ -106,14 +104,15 @@ def sendNextJob(addr):
             conn = node_conns[addr[0]].conn
             job = jobs[0]
             jobs.pop()
-            conn.send(pickle.dumps(node_conns[addr[0]].jobs[0]))
+            data = pickle.dumps(node_conns[addr[0]].jobs[0])
+            helper.send_msg(conn, data)
+            print("Bits sent to node: ", len(data))
             node_conns[addr[0]].waiting = False
 
 # Get local host name (IP)
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)
 port = 0
-BUFFER_SIZE = 1024
 
 users = []
 nodes = []
