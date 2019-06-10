@@ -107,7 +107,7 @@ def needJob(key):
     sendNextJob(key)
 
 def sendNextJob(key):
-    print("sendNextJob")
+    print("SendJob)
     if node_conns[key].waiting == True:
         if not len(node_conns[key].jobs) == 0:
             conn = node_conns[key].con
@@ -115,6 +115,7 @@ def sendNextJob(key):
             node_conns[key].jobs.pop()
             helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
+            print("Sent ", job.getLabel(), " to ", key)
 
 def returnToSender():
     while 1:
