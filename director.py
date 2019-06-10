@@ -117,7 +117,7 @@ def sendNextJob(key):
             conn = node_conns[key].con
             job = node_conns[key].jobs[0]
             node_conns[key].jobs.pop()
-            conn.send(pickle.dumps(job))
+            helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
 
 # Get local host name (IP)
