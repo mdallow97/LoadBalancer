@@ -6,43 +6,35 @@ import helper
 import time
 import threading
 
-def sendMatrice(index):
-    filename = "matrix-dir/" + test_names[index]
-
-    t0 = time.time()
-    matrix_file = open(filename, "rb")
-    file_data = matrix_file.read()
-    helper.send_msg(s, file_data)
-
+def recvMatrice(s, t0):
     data = helper.recv_msg(s)
     result = pickle.loads(data)
 
     t1 = time.time()
     print("Time to multiply matrices of size ", result.getSize(), ": ", t1-t0)
 
-
-
+# File names that contain raw matrice data
 test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
 
 if len(sys.argv) != 3:
     print("Format: python user.py <Director_IP> <Director_Port>")
     exit()
 
+# Connect to director
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
 
+# For testing purposes?
 print("Run tests? (y/n): ")
 reply = input()
 
 if reply == 'n':
     while 1:
-        # Get input matrix from stdin (assume all matrices are square [nxn])
-        # Package matrix into class
-        # Send matrices to director
-        # Wait for response from director
+        # Get matrix size from stdin (assume all matrices are square [nxn])
+
 
         print("Enter N for the two NxN matrices to be multiplied: ")
         size = input()
@@ -63,27 +55,34 @@ if reply == 'n':
         print("\n\n\n\tMatrix B\n")
         helper.printMatrix(matrix2, n)
 
+        # Package matrix into class and send matrices to director
         matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
         helper.send_msg(s, pickle.dumps(matrix_set))
 
+        # Wait for response from director
         data = helper.recv_msg(s)
         result = pickle.loads(data)
 
         print("\n\tResulting Matrix")
         helper.printMatrix(result.getResult(), result.getSize())
 else:
+    # Ask how many files to test
     print("How many test files (out of 7): ")
     num_tests = int(input())
 
-    if num_tests > 7:
-        print("No more than 7 tests")
+    if num_tests > 7 or num_tests < 1:
+        print("ERROR: Invalid number of tests")
         exit()
 
-    _matrices_threads = []
+    send_matrice_threads = []
     for i in range(num_tests):
-        matrice_thread = threading.Thread(target=sendMatrice, args=(i,))
-        send_matrices_threads.append(matrice_thread)
-        matrice_thread.start()
+        filename = "matrix-dir/" + test_names[index]
 
-    for thread in send_matrices_threads:
-        thread.join()
+        t0 = time.time()
+        matrix_file = open(filename, "rb")
+        file_data = matrix_file.read()
+        helper.send_msg(s, file_data)
+
+        matrice_thread = threading.Thread(target=recvMatrice, args=(s, t0))
+        send_matrice_threads.append(matrice_thread)
+        matrice_thread.start()
