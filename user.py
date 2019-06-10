@@ -5,6 +5,7 @@ import random
 import helper
 import time
 import threading
+from time import sleep
 
 def recvMatrice(s, i):
     data = helper.recv_msg(s)
@@ -89,3 +90,4 @@ else:
         matrice_thread = threading.Thread(target=recvMatrice, args=(s, i))
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
+        sleep(5)

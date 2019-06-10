@@ -131,8 +131,7 @@ def returnToSender():
             print("Not able to send result back to user")
 
         print("Matrix of size ", x.getSize(), " returned to sender")
-        sleep(0.5)
-
+        
 # Get local host name (IP)
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)
