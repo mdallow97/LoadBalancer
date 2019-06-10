@@ -107,7 +107,7 @@ def needJob(key):
     sendNextJob(key)
 
 def sendNextJob(key):
-    print("SendJob)
+    print("SendJob")
     if node_conns[key].waiting == True:
         if not len(node_conns[key].jobs) == 0:
             conn = node_conns[key].con
