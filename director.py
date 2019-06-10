@@ -41,6 +41,7 @@ def receiveRequest(conn, addr):
             matrix_couple_queue.append(x)
 
         elif type(x) == helper.ResultMatrix:
+            print("Recieved Result from: ", addr[0])
             needJob(addr[0])
             return_queue.append(x)
 
@@ -109,7 +110,9 @@ def needJob(key):
 def sendNextJob(key):
     print("SendJob")
     if node_conns[key].waiting == True:
+        print("Waiting")
         if not len(node_conns[key].jobs) == 0:
+            print("Has Job in Queue")
             conn = node_conns[key].con
             job = node_conns[key].jobs[0]
             node_conns[key].jobs.pop()
