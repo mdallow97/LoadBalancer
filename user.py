@@ -58,7 +58,7 @@ if reply == 'n':
         helper.printMatrix(matrix2, n)
 
         # Package matrix into class and send matrices to director
-        matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
+        matrix_set = helper.MatrixCouple(matrix1, matrix2, n, "-1")
         helper.send_msg(s, pickle.dumps(matrix_set))
 
         # Wait for response from director

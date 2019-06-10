@@ -2,11 +2,12 @@
 import struct
 
 class MatrixCouple:
-    def __init__(self, matrix1, matrix2, n, user_addr=None):
+    def __init__(self, matrix1, matrix2, n, label, user_addr=None):
         self.matrix1 = matrix1
         self.matrix2 = matrix2
         self.n = n
         self.time = 0
+        self.label = label
 
     def getMatrix1(self):
         return self.matrix1
@@ -30,11 +31,15 @@ class MatrixCouple:
     def getSize(self):
         return self.n
 
+    def getLabel(self):
+        return self.label
+
 class ResultMatrix:
-    def __init__(self, result, n, user):
+    def __init__(self, result, n, user, label):
         self.result = result
         self.n = n
         self.user = user
+        self.label = label
 
     def getResult(self):
         return self.result
@@ -50,6 +55,9 @@ class ResultMatrix:
 
     def getTime(self):
         return self.time
+
+    def getLabel(self):
+        return self.label
 
 class CPUSpecifications:
     # can hold different hw specifications
