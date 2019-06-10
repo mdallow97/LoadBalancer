@@ -76,8 +76,8 @@ class NodeInfo:
     def getJobsSize(self):
         #calc combined weight of all jobs
         total = 0.0
-        for i in jobs:
-            total = total + 2.0 * float(jobs[i].getSize() ** 2) * (1.0 / float(self.getWeight()))
+        for i in self.jobs:
+            total = total + 2.0 * float(self.jobs[i].getSize() ** 2) * (1.0 / float(self.getWeight()))
         return total
 
 def send_msg(socket, msg):

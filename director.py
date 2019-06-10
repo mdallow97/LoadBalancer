@@ -19,7 +19,6 @@ def acceptUser():
             print("Connection activated from node with address ", addr)
             #node_conns.append(conn)
             node_conns[addr[0]] = helper.NodeInfo(conn)
-            print(list(node_conns))
         else:
             print("Connection from new user with address ", addr)
             users.append((conn, addr))
@@ -68,6 +67,7 @@ def randomDist():
     return random.choice(list(node_conns))
 
 def WLC():
+    print("WLC")
     key = ""
     lowestLoad = float("inf")#initialize to pos infinity
     for i in list(node_conns):
@@ -75,6 +75,16 @@ def WLC():
         if temp < lowestLoad:
             key = i
             lowestLoad = temp
+    return key
+
+RR_index = 0
+
+def RR():
+    print("RR")
+    key = list(node_conns)[RR_index]
+    RR_index += 1
+    if RR_index >= len(node_conns):
+        RR_index = 0
     return key
 
 def distributeLoad():
@@ -95,19 +105,20 @@ def distributeLoad():
         node_conns[key].jobs.append(matrix_couple)
         sendNextJob(key)#TODO: this may need to be casted
 
-def needJob(addr):
-    node_conns[addr[0]].waiting = True
-    sendNextJob(addr)
+def needJob(key):
+    print("needJob")
+    node_conns[key].waiting = True
+    sendNextJob(key)
 
-def sendNextJob(addr):
-    if node_conns[addr[0]].waiting == True:
-        if not len(jobs) == 0:
-            conn = node_conns[addr[0]].conn
-            job = jobs[0]
-            jobs.pop()
-            data = pickle.dumps(node_conns[addr[0]].jobs[0])
-            helper.send_msg(conn, data)
-            node_conns[addr[0]].waiting = False
+def sendNextJob(key):
+    print("sendNextJob")
+    if node_conns[key].waiting == True:
+        if not len(node_conns[key].jobs) == 0:
+            conn = node_conns[key].con
+            job = node_conns[key].jobs[0]
+            node_conns[key].jobs.pop()
+            conn.send(pickle.dumps(job))
+            node_conns[key].waiting = False
 
 # Get local host name (IP)
 hostname = socket.gethostname()
