@@ -89,7 +89,7 @@ class NodeInfo:
         self.jobs.append(job)
 
     def getWeight(self):
-        return self.weight
+        return self.wt
 
     def getJobs(self):
         return self.jobs
