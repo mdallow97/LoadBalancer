@@ -30,14 +30,14 @@ if len(sys.argv) != 3:
 director_IP = sys.argv[1]
 director_port = int(sys.argv[2])
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((director_IP, director_port))
 
 # For testing purposes?
 print("Run tests? (y/n): ")
 reply = input()
 
 if reply == 'n':
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((director_IP, director_port))
     while 1:
         # Get matrix size from stdin (assume all matrices are square [nxn])
 
