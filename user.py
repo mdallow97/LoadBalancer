@@ -9,16 +9,10 @@ import threading
 from helper import ResultMatrix
 from time import sleep
 
+exec_time = []
 # Threaded function that receives results
 def recvMatrice(s, i):
-    t0 = time.time()
-    matrix_file = open(filename, "rb")
-    file_data = matrix_file.read()
-    matrice = pickle.loads(file_data)
-    matrice.setTime(t0)
-    file_data = pickle.dumps(matrice)
-    helper.send_msg(return_socket, file_data)
-
+    
     data = helper.recv_msg(s)
     result = pickle.loads(data)
 
@@ -26,13 +20,18 @@ def recvMatrice(s, i):
     #print("Time to multiply matrices", result.getLabel(), " of size ", result.getSize(), ": ", t1-result.getTime())
     print("Time to multiply matrices", i, " of size ", result.getSize(), ": ", t1-result.getTime())
 
-def createRandOrder(range):
-    flags = [[0] * range]
-    order = [[-1] * range]
+    exec_time.append(t1-result.getTime())
+
+def createRandOrder(rng):
+    flags = []
+    order = []
+    for i in range(0, rng):
+        flags.append(0)
+        order.append(-1)
 
     num_flags_activated = 0
-    while num_flags_activated < range:
-        index = random.randint(0, range)
+    while num_flags_activated < rng:
+        index = random.randint(0, rng-1)
 
         if flags[index] == 1:
             continue
@@ -106,17 +105,32 @@ else:
 
     send_matrice_threads = []
     return_sockets = []
-    for i in createRandOrder(num_tests):
+    order = createRandOrder(num_tests)
+    print("Order: ", order)
+    for i in order:
         filename = "matrix-dir/" + test_names[i]
         return_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return_socket.connect((director_IP, director_port))
         return_sockets.append(return_socket)
 
+        t0 = time.time()
+        matrix_file = open(filename, "rb")
+        file_data = matrix_file.read()
+        matrice = pickle.loads(file_data)
+        matrice.setTime(t0)
+        file_data = pickle.dumps(matrice)
+        helper.send_msg(return_socket, file_data)
+
         matrice_thread = threading.Thread(target=recvMatrice, args=(return_socket, i))
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
         # JOBS GETTING SENT BEFORE THEY RETURN, MIXING OF DATA??
-
+    mean_exec_time = 0
     for i in range(num_tests):
         send_matrice_threads[i].join()
         return_sockets[i].close()
+        mean_exec_time += exec_time[i]
+
+    print("===========RESULT===========")
+    print("Mean Execution Time: ", mean_exec_time/num_tests)
+    print("Number of tests: ", num_tests)
