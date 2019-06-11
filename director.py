@@ -36,9 +36,7 @@ def receiveRequest(conn, addr):
 
         x = pickle.loads(data)
         if type(x) == helper.MatrixCouple:
-            if not x.getUser():
-                x.setUser(addr)
-
+            x.setUser(addr)
             matrix_couple_queue.append(x)
 
         elif type(x) == helper.ResultMatrix:

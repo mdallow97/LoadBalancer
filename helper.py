@@ -8,6 +8,7 @@ class MatrixCouple:
         self.n = n
         self.time = 0
         self.label = label
+        self.user = user_addr
 
     def getMatrix1(self):
         return self.matrix1
@@ -22,7 +23,10 @@ class MatrixCouple:
         self.time = time
 
     def getUser(self):
-        return self.user
+        if not self.user:
+            return None
+        else:
+            return self.user
 
     def getTime(self):
         return self.time
