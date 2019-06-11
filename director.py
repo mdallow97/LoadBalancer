@@ -41,6 +41,7 @@ def receiveRequest(conn, addr):
             matrix_couple_queue.append(x)
 
         elif type(x) == helper.ResultMatrix:
+            print("Recieved Result from: ", addr[0])
             needJob(addr[0])
             return_queue.append(x)
 
@@ -107,14 +108,17 @@ def needJob(key):
     sendNextJob(key)
 
 def sendNextJob(key):
-    print("sendNextJob")
+    print("SendJob")
     if node_conns[key].waiting == True:
+        print("Waiting")
         if not len(node_conns[key].jobs) == 0:
+            print("Has Job in Queue")
             conn = node_conns[key].con
             job = node_conns[key].jobs[0]
             node_conns[key].jobs.pop()
             helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
+            print("Sent ", job.getLabel(), " to ", key)
 
 def returnToSender():
     while 1:
@@ -123,6 +127,7 @@ def returnToSender():
 
         x = return_queue.pop()
         original_addr = x.getUser()
+        print(x.getUser())
         for addr_tuple in users:
             if addr_tuple[1] == original_addr:
                 helper.send_msg(addr_tuple[0], pickle.dumps(x))

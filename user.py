@@ -5,6 +5,8 @@ import random
 import helper
 import time
 import threading
+
+from helper import ResultMatrix
 from time import sleep
 
 # Threaded function that receives results
@@ -13,7 +15,7 @@ def recvMatrice(s, i):
     result = pickle.loads(data)
 
     t1 = time.time()
-    print("Time to multiply matrices of size ", result.getSize(), ": ", t1-result.getTime())
+    print("Time to multiply matrices", result.getLabel(), " of size ", result.getSize(), ": ", t1-result.getTime())
 
 # File names that contain raw matrice data
 test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
@@ -58,7 +60,7 @@ if reply == 'n':
         helper.printMatrix(matrix2, n)
 
         # Package matrix into class and send matrices to director
-        matrix_set = helper.MatrixCouple(matrix1, matrix2, n)
+        matrix_set = helper.MatrixCouple(matrix1, matrix2, n, "-1")
         helper.send_msg(s, pickle.dumps(matrix_set))
 
         # Wait for response from director
