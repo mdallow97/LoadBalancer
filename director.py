@@ -114,8 +114,7 @@ def sendNextJob(key):
         if not len(node_conns[key].jobs) == 0:
             print("Has Job in Queue")
             conn = node_conns[key].con
-            job = node_conns[key].jobs[0]
-            node_conns[key].jobs.pop()
+            job = node_conns[key].jobs.pop(0)
             helper.send_msg(conn, pickle.dumps(job))
             node_conns[key].waiting = False
             print("Sent ", job.getLabel(), " to ", key)
