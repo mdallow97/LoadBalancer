@@ -97,6 +97,7 @@ def distributeLoad():
         # This is the algorithm to distribute work (balance load)
         # RIGHT NOW IT IS WLC
         key = WLC()
+        #key = RR()
 
         matrix_couple = matrix_couple_queue.pop()
         node_conns[key].jobs.append(matrix_couple)

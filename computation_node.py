@@ -7,6 +7,7 @@ import sys
 import helper
 import cpuinfo
 import helper
+import random
 
 def multiplyMatrices(matrix_couple):
     n = matrix_couple.getSize()
@@ -59,7 +60,15 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((director_IP, director_port))
 
 hw_specs = getSpecifications()
-helper.send_msg(s, pickle.dumps(hw_specs))
+
+# ONLY FOR TESTING PURPOSES 
+cpus = random.randint(1, int(hw_specs.num_CPUs))
+cores = random.randint(1, int(hw_specs.num_cores))
+freq = random.randint(0, int(100.0 * hw_specs.frequency))
+freq = float(freq) / 100.0
+rand_hw_specs = helper.CPUSpecifications(cpus, cores, freq)
+
+helper.send_msg(s, pickle.dumps(rand_hw_specs))
 
 # Get specifications
 # Load into class
