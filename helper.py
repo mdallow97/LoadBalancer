@@ -1,6 +1,7 @@
 # Parser
 import struct
 
+# Object type that will be sent to computation node
 class MatrixCouple:
     def __init__(self, matrix1, matrix2, n, label, user_addr=None):
         self.matrix1 = matrix1
@@ -37,6 +38,7 @@ class MatrixCouple:
     def getLabel(self):
         return self.label
 
+# Object type returned from computation node
 class ResultMatrix:
     def __init__(self, result, n, label, user):
         self.result = result
@@ -62,6 +64,7 @@ class ResultMatrix:
     def getLabel(self):
         return self.label
 
+# Object type gathered by computation node and sent to director
 class CPUSpecifications:
     # can hold different hw specifications
     def __init__(self, num_CPUs, num_cores, frequency):
@@ -104,11 +107,13 @@ class NodeInfo:
             total = total + 2.0 * float(i.getSize() ** 2) * (1.0 / float(self.getWeight()))
         return total
 
+# Used for sending very large messages
 def send_msg(socket, msg):
     print("Bytes sent: ", len(msg))
     msg = struct.pack('>I', len(msg)) + msg
     socket.sendall(msg)
 
+# Used for receiving very large messages
 def recv_msg(socket):
     raw_msg_len = recvall(socket, 4)
     if not raw_msg_len:
@@ -118,6 +123,7 @@ def recv_msg(socket):
     print("Bytes received: ", len(data))
     return data
 
+# A helper function for receiving large messages
 def recvall(socket, n):
     data = b''
     while len(data) < n:
@@ -126,6 +132,7 @@ def recvall(socket, n):
         data += packet
     return data
 
+# Prints a matrix
 def printMatrix(matrix, n):
     for i in range(n):
         print("\n")

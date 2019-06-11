@@ -12,12 +12,11 @@ from time import sleep
 exec_time = []
 # Threaded function that receives results
 def recvMatrice(s, i):
-    
+
     data = helper.recv_msg(s)
     result = pickle.loads(data)
 
     t1 = time.time()
-    #print("Time to multiply matrices", result.getLabel(), " of size ", result.getSize(), ": ", t1-result.getTime())
     print("Time to multiply matrices", i, " of size ", result.getSize(), ": ", t1-result.getTime())
 
     exec_time.append(t1-result.getTime())
@@ -108,11 +107,13 @@ else:
     order = createRandOrder(num_tests)
     print("Order: ", order)
     for i in order:
-        filename = "matrix-dir/" + test_names[i]
+        # Create socket for each matrix set
         return_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return_socket.connect((director_IP, director_port))
         return_sockets.append(return_socket)
 
+        # Locate matrix file (raw data), forward to director
+        filename = "matrix-dir/" + test_names[i]
         t0 = time.time()
         matrix_file = open(filename, "rb")
         file_data = matrix_file.read()
@@ -121,16 +122,19 @@ else:
         file_data = pickle.dumps(matrice)
         helper.send_msg(return_socket, file_data)
 
+        # Start thread that will receive result
         matrice_thread = threading.Thread(target=recvMatrice, args=(return_socket, i))
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
-        # JOBS GETTING SENT BEFORE THEY RETURN, MIXING OF DATA??
+
+    # When done, join threads and close connections
     mean_exec_time = 0
     for i in range(num_tests):
         send_matrice_threads[i].join()
         return_sockets[i].close()
         mean_exec_time += exec_time[i]
 
+    # Calculate mean execution time
     print("===========RESULT===========")
     print("Mean Execution Time: ", mean_exec_time/num_tests)
     print("Number of tests: ", num_tests)

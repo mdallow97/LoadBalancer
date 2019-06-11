@@ -18,7 +18,6 @@ def acceptUser():
 
         if addr[0] in nodes:
             print("Connection activated from node with address ", addr)
-            #node_conns.append(conn)
             node_conns[addr[0]] = helper.NodeInfo(conn)
         else:
             print("Connection from new user with address ", addr)
@@ -96,9 +95,9 @@ def distributeLoad():
 
         # This is the algorithm to distribute work (balance load)
         # RIGHT NOW IT IS WLC
-        #key = WLC()
+        key = WLC()
         #key = RR()
-        key = randomDist()
+        # key = randomDist()
 
         matrix_couple = matrix_couple_queue.pop()
         node_conns[key].jobs.append(matrix_couple)
