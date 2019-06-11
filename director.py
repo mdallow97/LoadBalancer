@@ -36,6 +36,7 @@ def receiveRequest(conn, addr):
 
         x = pickle.loads(data)
         if type(x) == helper.MatrixCouple:
+            print("Matrix ", x.getSize(), " received from ", addr)
             x.setUser(addr)
             matrix_couple_queue.append(x)
 
@@ -129,12 +130,11 @@ def returnToSender():
         print(x.getUser())
         for addr_tuple in users:
             if addr_tuple[1] == original_addr:
+                print("Matrix ", x.getSize(), " sent to ", addr_tuple)
                 helper.send_msg(addr_tuple[0], pickle.dumps(x))
                 break
         else:
             print("Not able to send result back to user")
-
-        print("Matrix of size ", x.getSize(), " returned to sender")
 
 # Get local host name (IP)
 hostname = socket.gethostname()
