@@ -16,8 +16,6 @@ Connect to Director –> send 2 matrices –> randomly select computation node [
 [$]: This should be changed from random to whatever load balancing alg we choose. The alg should depend on computation nodes hardware, which means we can't implement this part until PART 2 is complete (director needs hw specifications)
 
 Instructions on How to Run:
-NOTE: This program will not work flawlessly because it is so far designed to be implemented across multiple machines (but has not been tested on multiple machines)
-
 1) Run "python director.py <list_of_computation_node_IPs>"
 2) Run "python computation_node.py <director_IP> <director_port>". The director's IP and Port will be printed after step 1. Step 2 should be run once at the very least, and as up to as many times as IPs included in the list in step 1.
 3) Run "python user.py <director_IP> <director_port>". This can be run on multiple different machines like step 2, but not on the same machines as step 2. This will prompt you to enter a matrix size, which creates two matrices of the given size randomly
