@@ -22,8 +22,7 @@ class MatrixCouple:
         self.time = time
 
     def getUser(self):
-        if self.user:
-            return self.user
+        return self.user
 
     def getTime(self):
         return self.time

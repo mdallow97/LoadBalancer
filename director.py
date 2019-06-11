@@ -36,7 +36,8 @@ def receiveRequest(conn, addr):
 
         x = pickle.loads(data)
         if type(x) == helper.MatrixCouple:
-            x.setUser(addr)
+            if not x.getUser():
+                x.setUser(addr)
 
             matrix_couple_queue.append(x)
 
@@ -136,7 +137,7 @@ def returnToSender():
             print("Not able to send result back to user")
 
         print("Matrix of size ", x.getSize(), " returned to sender")
-        
+
 # Get local host name (IP)
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)

@@ -79,8 +79,12 @@ else:
         exit()
 
     send_matrice_threads = []
+    return_sockets = []
     for i in range(num_tests):
         filename = "matrix-dir/" + test_names[i]
+        return_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        return_socket.connect((director_IP, director_port))
+        return_sockets.append(return_socket)
 
         t0 = time.time()
         matrix_file = open(filename, "rb")
@@ -88,10 +92,13 @@ else:
         matrice = pickle.loads(file_data)
         matrice.setTime(t0)
         file_data = pickle.dumps(matrice)
-        helper.send_msg(s, file_data)
+        helper.send_msg(return_socket, file_data)
 
-        matrice_thread = threading.Thread(target=recvMatrice, args=(s, i))
+        matrice_thread = threading.Thread(target=recvMatrice, args=(return_socket, i))
         send_matrice_threads.append(matrice_thread)
         matrice_thread.start()
-        sleep(5)
         # JOBS GETTING SENT BEFORE THEY RETURN, MIXING OF DATA??
+
+    for i in range(num_tests):
+        send_matrice_threads[i].join()
+        return_sockets[i].close()
