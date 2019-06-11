@@ -74,9 +74,9 @@ def WLC():
             lowestLoad = temp
     return key
 
-RR_index = 0
 
 def RR():
+    global RR_index
     print("RR")
     key = list(node_conns)[RR_index]
     RR_index += 1
@@ -96,8 +96,9 @@ def distributeLoad():
 
         # This is the algorithm to distribute work (balance load)
         # RIGHT NOW IT IS WLC
-        key = WLC()
+        #key = WLC()
         #key = RR()
+        key = randomDist()
 
         matrix_couple = matrix_couple_queue.pop()
         node_conns[key].jobs.append(matrix_couple)
@@ -140,6 +141,7 @@ def returnToSender():
 hostname = socket.gethostname()
 host = socket.gethostbyname(hostname)
 port = 0
+RR_index = 0
 
 users = []
 nodes = []
