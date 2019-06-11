@@ -11,6 +11,14 @@ from time import sleep
 
 # Threaded function that receives results
 def recvMatrice(s, i):
+    t0 = time.time()
+    matrix_file = open(filename, "rb")
+    file_data = matrix_file.read()
+    matrice = pickle.loads(file_data)
+    matrice.setTime(t0)
+    file_data = pickle.dumps(matrice)
+    helper.send_msg(return_socket, file_data)
+
     data = helper.recv_msg(s)
     result = pickle.loads(data)
 
@@ -18,6 +26,22 @@ def recvMatrice(s, i):
     #print("Time to multiply matrices", result.getLabel(), " of size ", result.getSize(), ": ", t1-result.getTime())
     print("Time to multiply matrices", i, " of size ", result.getSize(), ": ", t1-result.getTime())
 
+def createRandOrder(range):
+    flags = [[0] * range]
+    order = [[-1] * range]
+
+    num_flags_activated = 0
+    while num_flags_activated < range:
+        index = random.randint(0, range)
+
+        if flags[index] == 1:
+            continue
+        else:
+            order[num_flags_activated] = index
+            flags[index] = 1
+            num_flags_activated += 1
+
+    return order
 
 # File names that contain raw matrice data
 test_names = ["matrix16", "matrix128", "matrix256", "matrix512", "matrix1024", "matrix2048", "matrix4096"]
@@ -82,19 +106,11 @@ else:
 
     send_matrice_threads = []
     return_sockets = []
-    for i in range(num_tests):
+    for i in createRandOrder(num_tests):
         filename = "matrix-dir/" + test_names[i]
         return_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return_socket.connect((director_IP, director_port))
         return_sockets.append(return_socket)
-
-        t0 = time.time()
-        matrix_file = open(filename, "rb")
-        file_data = matrix_file.read()
-        matrice = pickle.loads(file_data)
-        matrice.setTime(t0)
-        file_data = pickle.dumps(matrice)
-        helper.send_msg(return_socket, file_data)
 
         matrice_thread = threading.Thread(target=recvMatrice, args=(return_socket, i))
         send_matrice_threads.append(matrice_thread)
